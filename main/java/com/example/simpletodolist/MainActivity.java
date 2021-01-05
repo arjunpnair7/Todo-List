@@ -12,6 +12,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements TodoListFragment.callbacks {
     private String TAG = "mainactivity";
+    Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements TodoListFragment.
         setContentView(R.layout.activity_main);
 
         //Get current fragment and make sure that it is not null
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+         currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         //Create a new fragment if fragment is null
         if (currentFragment == null) {
             currentFragment = TodoListFragment.newInstance();
@@ -34,4 +35,6 @@ public class MainActivity extends AppCompatActivity implements TodoListFragment.
         Log.i(TAG, "transitioned to todolistitemsfragment");
 
     }
+
+
 }

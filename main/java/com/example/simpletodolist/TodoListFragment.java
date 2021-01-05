@@ -23,13 +23,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class TodoListFragment extends Fragment {
+public class TodoListFragment extends Fragment implements NewListAlertDialogFragment.NewListDialogListener {
     private String TAG = "TodoListFragment";
     private TodoListsViewModel todoListsViewModel;
     private RecyclerView recyclerView;
     private TodoListAdapter adapter;
     private callbacks callbacks;
     private FloatingActionButton fab;
+    public String inputtedTitle;
+
+    @Override
+    public void onDialogPositiveClick(String inputtedTitle) {
+        Log.i(TAG, "TodoList fragment received title: " + inputtedTitle);
+    }
 
     public interface callbacks {
          void onListClicked(ArrayList<String> itemNames, List<Boolean> status, List<Date> creationDates);
@@ -57,6 +63,7 @@ public class TodoListFragment extends Fragment {
             public void onClick(View v) {
                 Log.i(TAG, "FAB clicked");
                 DialogFragment fragment = new NewListAlertDialogFragment();
+                fragment.setTargetFragment(TodoListFragment.this, 0);
                 fragment.show(getFragmentManager(), "newlist");
             }
         });
