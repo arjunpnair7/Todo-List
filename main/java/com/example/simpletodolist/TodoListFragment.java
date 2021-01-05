@@ -11,10 +11,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +29,7 @@ public class TodoListFragment extends Fragment {
     private RecyclerView recyclerView;
     private TodoListAdapter adapter;
     private callbacks callbacks;
+    private FloatingActionButton fab;
 
     public interface callbacks {
          void onListClicked(ArrayList<String> itemNames, List<Boolean> status, List<Date> creationDates);
@@ -45,6 +49,19 @@ public class TodoListFragment extends Fragment {
         callbacks = (callbacks) context;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "FAB clicked");
+                DialogFragment fragment = new NewListAlertDialogFragment();
+                fragment.show(getFragmentManager(), "newlist");
+            }
+        });
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -52,12 +69,15 @@ public class TodoListFragment extends Fragment {
         ViewModelProvider provider = new ViewModelProvider(TodoListFragment.this);
         todoListsViewModel = provider.get(TodoListsViewModel.class);
         recyclerView = v.findViewById(R.id.todo_items);
+        fab = v.findViewById(R.id.fab);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new TodoListAdapter(todoListsViewModel.myList);
         Log.i(TAG, todoListsViewModel.myList.toString());
         recyclerView.setAdapter(adapter);
         return v;
     }
+
+
 
     public static TodoListFragment newInstance() {
         //Static method to create a new instance of the TodoList Fragment
