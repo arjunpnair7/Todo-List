@@ -25,6 +25,8 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TodoListItemsFragment extends Fragment implements NewListAlertDialogFragment.NewListDialogListener {
     public static String ITEMNAMES = "itemnames";
@@ -39,6 +41,8 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     public static String ASSOCIATEDID = "associatedid";
     private TodoItemsViewModel todoItemsViewModel;
     public static String NEWITEMTAG = "newitem";
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,7 +100,7 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
          TodoItemsViewModel.retrieveItems(associatedId);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
        // adapter = new ToDoItemAdapter(itemsList);
-        recyclerView.setAdapter(adapter);
+       // recyclerView.setAdapter(adapter);
 
 
         return v;
@@ -127,6 +131,15 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     @Override
     public void onDialogPositiveClick(String inputtedTitle) {
         Log.i(TAG, "todoitemfragment received click");
+        TodoItem item = new TodoItem(inputtedTitle, false, new Date());
+        item.id = associatedId;
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                TodoListFragment.database.toDoListDao().addItemToList(item);
+            }
+        });
+
     }
 
     private class ToDoItemHolder extends RecyclerView.ViewHolder {

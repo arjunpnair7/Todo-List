@@ -1,5 +1,7 @@
 package com.example.simpletodolist;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -12,6 +14,7 @@ public class TodoItemsViewModel extends ViewModel {
 
     public static void retrieveItems(String id) {
         myItems = TodoListFragment.database.toDoListDao().getItemsForList(id);
+        Log.i("test", "tester");
     }
 
 

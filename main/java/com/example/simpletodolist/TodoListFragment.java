@@ -126,6 +126,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
                 Log.i(TAG, "data observed");
                 adapter = new TodoListAdapter(toDoLists);
                 recyclerView.setAdapter(adapter);
+
             }
         });
     }
@@ -147,6 +148,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
             //To be added
             //Will trigger a transition to itemList fragment
             //prepareData();
+            inputtedTitle = listTitle.getText().toString();
             callbacks.onListClicked(inputtedTitle);
            // Log.i(TAG, "itemview clicked");
 
@@ -189,6 +191,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
             ToDoList list = adapterLists.get(position);
             holder.Bind(list);
             holder.list = list;
+            //inputtedTitle = adapterLists.get(position);
 
         }
 
