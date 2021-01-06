@@ -19,7 +19,7 @@
         android:layout_height="58dp"
         android:layout_gravity="end|bottom"
         android:layout_marginTop="624dp"
-        android:backgroundTint="#009688"
+        android:backgroundTint="#F44336"
         android:contentDescription="Add new list"
         android:src="@drawable/ic_list_add"
         android:tint="@color/black"

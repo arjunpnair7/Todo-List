@@ -1,19 +1,23 @@
 package com.example.simpletodolist;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 public class ToDoList {
 
-    @PrimaryKey @NonNull
+
     public String title;
 
+    @PrimaryKey(autoGenerate = true)
+    public int identifier;
 
     //public List<TodoItem> todoItems = new ArrayList<>();
 
@@ -22,8 +26,9 @@ public class ToDoList {
         //todoItems = list;
   //  }
 
-    public ToDoList(@NonNull String title) {
+    public ToDoList(String title) {
         //title = newTitle;
         this.title = title;
+        //this.identifier = Integer.valueOf(UUID.randomUUID().toString());
     }
 }

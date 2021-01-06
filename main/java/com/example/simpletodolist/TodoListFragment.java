@@ -68,7 +68,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        database = Room.databaseBuilder(getContext(), TodolistsDatabase.class, "todolistsdatabase").fallbackToDestructiveMigration().build();
+        database = Room.databaseBuilder(getContext(), TodolistsDatabase.class, "todolistsdatabase").build();
         Log.i(TAG, "TodoList Fragment created");
 
     }

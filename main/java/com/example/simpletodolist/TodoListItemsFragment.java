@@ -147,6 +147,7 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
         TextView title = itemView.findViewById(R.id.item_title);
         TextView date = itemView.findViewById(R.id.item_date);
 
+
         public ToDoItemHolder(@NonNull View itemView) {
             super(itemView);
 
