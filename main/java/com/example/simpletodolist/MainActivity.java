@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements TodoListFragment.
         Log.i(TAG, "Name of current list: " + listId);
         //TodoListItemsFragment fragment = TodoListItemsFragment.newInstance(itemNames, status, creationDates);
         TodoListItemsFragment fragment = TodoListItemsFragment.newInstance(listId);
-        TodoItemsViewModel.retrieveItems(listId);
+//        TodoItemsViewModel.retrieveItems(listId);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out).replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
         Log.i(TAG, "transitioned to todolistitemsfragment");
 

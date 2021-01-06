@@ -35,8 +35,10 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     public static String CREATIONDATE = "creationdate";
     private String TAG = "todolistitemsfragment";
     private RecyclerView recyclerView;
+    private RecyclerView completedRecyclerView;
     private String associatedId;
     private ToDoItemAdapter adapter;
+    private ToDoItemAdapter completedItemsAdapter;
     private LiveData<List<TodoItem>> itemsList;
     private FloatingActionButton fab;
     public static String ASSOCIATEDID = "associatedid";
@@ -82,9 +84,22 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
         TodoItemsViewModel.myItems.observe(getViewLifecycleOwner(), new Observer<List<TodoItem>>() {
             @Override
             public void onChanged(List<TodoItem> todoItems) {
-                Log.i(TAG, "new item livedata");
+                Log.i(TAG, "new uncompleted item livedata");
+                TodoItemsViewModel.retrieveItems(associatedId, false);
                 adapter = new ToDoItemAdapter(todoItems);
                 recyclerView.setAdapter(adapter);
+                //completedItemsAdapter = new ToDoItemAdapter(todoItems);
+                //completedRecyclerView.setAdapter(completedItemsAdapter);
+            }
+        });
+        TodoItemsViewModel.retrieveCompletedItems(associatedId);
+        TodoItemsViewModel.myCompletedItems.observe(getViewLifecycleOwner(), new Observer<List<TodoItem>>() {
+            @Override
+            public void onChanged(List<TodoItem> todoItems) {
+                Log.i(TAG, "new completed item livedata");
+                TodoItemsViewModel.retrieveItems(associatedId, true);
+                completedItemsAdapter = new ToDoItemAdapter(todoItems);
+                completedRecyclerView.setAdapter(completedItemsAdapter);
             }
         });
 
@@ -95,11 +110,17 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_todo_items, container, false);
         recyclerView = v.findViewById(R.id.todo_items_page);
+        completedRecyclerView = v.findViewById(R.id.completedRecyclerview);
         fab = v.findViewById(R.id.items_fab);
         ViewModelProvider provider = new ViewModelProvider(TodoListItemsFragment.this);
          todoItemsViewModel = provider.get(TodoItemsViewModel.class);
-         TodoItemsViewModel.retrieveItems(associatedId);
+         TodoItemsViewModel.retrieveItems(associatedId, true);
+         //TodoItemsViewModel.retrieveCompletedItems(associatedId);
+         //if (TodoItemsViewModel.myCompletedItems == null) {
+         //    Log.i(TAG, "myCompletedItems is null");
+        // }
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        completedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
        // adapter = new ToDoItemAdapter(itemsList);
        // recyclerView.setAdapter(adapter);
 
@@ -132,7 +153,7 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     @Override
     public void onDialogPositiveClick(String inputtedTitle) {
         Log.i(TAG, "todoitemfragment received click");
-        TodoItem item = new TodoItem(inputtedTitle, false, new Date());
+        TodoItem item = new TodoItem(inputtedTitle, true, new Date());
         item.id = associatedId;
         executor.execute(new Runnable() {
             @Override
