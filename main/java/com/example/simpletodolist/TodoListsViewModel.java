@@ -1,5 +1,6 @@
 package com.example.simpletodolist;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -8,14 +9,14 @@ import java.util.List;
 
 public class TodoListsViewModel extends ViewModel {
 
-    List<ToDoList> myList = new ArrayList<>();
+    LiveData<List<ToDoList>> myList = TodoListFragment.database.toDoListDao().getToDoLists();
 
     public TodoListsViewModel() {
-        List<TodoItem> fakeList = createListItems();
-        for (int i = 0; i < 100; i++) {
-            ToDoList list = new ToDoList("List " + i, fakeList);
-            myList.add(list);
-        }
+        //List<TodoItem> fakeList = createListItems();
+        //for (int i = 0; i < 100; i++) {
+         //   ToDoList list = new ToDoList("List " + i);
+       //     myList.add(list);
+       // }
     }
     //test
 

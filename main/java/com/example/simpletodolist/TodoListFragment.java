@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,15 +14,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
+import com.example.simpletodolist.database.TodolistsDatabase;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TodoListFragment extends Fragment implements NewListAlertDialogFragment.NewListDialogListener {
     private String TAG = "TodoListFragment";
@@ -31,9 +37,26 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
     private callbacks callbacks;
     private FloatingActionButton fab;
     public String inputtedTitle;
+    public static TodolistsDatabase database;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     public void onDialogPositiveClick(String inputtedTitle) {
+        this.inputtedTitle = inputtedTitle;
+        ToDoList list = new ToDoList(inputtedTitle);
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                database.toDoListDao().addToDoList(list);
+            }
+        });
+       // database.toDoListDao().addToDoList(list);
+        //adapter.notifyDataSetChanged();
+        //adapter.notifyItemInserted(todoListsViewModel.myList.size()-1);
+        //adapter = new TodoListAdapter(todoListsViewModel.myList);
+        //recyclerView.setAdapter(adapter);
+
         Log.i(TAG, "TodoList fragment received title: " + inputtedTitle);
     }
 
@@ -45,6 +68,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        database = Room.databaseBuilder(getContext(), TodolistsDatabase.class, "todolistsdatabase").fallbackToDestructiveMigration().build();
         Log.i(TAG, "TodoList Fragment created");
 
     }
@@ -78,9 +102,10 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
         recyclerView = v.findViewById(R.id.todo_items);
         fab = v.findViewById(R.id.fab);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new TodoListAdapter(todoListsViewModel.myList);
+        //adapter = new TodoListAdapter(todoListsViewModel.myList);
+
         Log.i(TAG, todoListsViewModel.myList.toString());
-        recyclerView.setAdapter(adapter);
+        //recyclerView.setAdapter(adapter);
         return v;
     }
 
@@ -90,6 +115,19 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
         //Static method to create a new instance of the TodoList Fragment
         TodoListFragment fragment = new TodoListFragment();
         return fragment;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        todoListsViewModel.myList.observe(getViewLifecycleOwner(), new Observer<List<ToDoList>>() {
+            @Override
+            public void onChanged(List<ToDoList> toDoLists) {
+                Log.i(TAG, "data observed");
+                adapter = new TodoListAdapter(toDoLists);
+                recyclerView.setAdapter(adapter);
+            }
+        });
     }
 
     private class TodoListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -108,12 +146,12 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
         public void onClick(View v) {
             //To be added
             //Will trigger a transition to itemList fragment
-            prepareData();
-            callbacks.onListClicked(itemNames, status, creationDates);
-            Log.i(TAG, "itemview clicked");
+            //prepareData();
+            //callbacks.onListClicked(itemNames, status, creationDates);
+           // Log.i(TAG, "itemview clicked");
         }
 
-        private void prepareData() {
+       /* private void prepareData() {
             List<TodoItem> items = list.todoItems;
             for (TodoItem item: items) {
                 itemNames.add(item.title);
@@ -121,7 +159,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
                 creationDates.add(item.creationDate);
             }
 
-        }
+        } */
 
 
 

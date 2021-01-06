@@ -38,11 +38,9 @@ public class NewListAlertDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         View v = inflater.inflate(R.layout.fragment_new_list_dialog, null);
-
         builder.setView(v);
-        //builder.setView(inflater.inflate(R.layout.fragment_new_list_dialog, null));
-        //View v = inflater.inflate(R.layout.fragment_new_list_dialog, null);
-        editTitle = (EditText) v.findViewById(R.id.editText);
+
+        editTitle = v.findViewById(R.id.editText);
         titleWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
