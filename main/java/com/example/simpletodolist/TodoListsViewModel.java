@@ -11,6 +11,7 @@ public class TodoListsViewModel extends ViewModel {
 
     LiveData<List<ToDoList>> myList = TodoListFragment.database.toDoListDao().getToDoLists();
 
+
     public TodoListsViewModel() {
         //List<TodoItem> fakeList = createListItems();
         //for (int i = 0; i < 100; i++) {

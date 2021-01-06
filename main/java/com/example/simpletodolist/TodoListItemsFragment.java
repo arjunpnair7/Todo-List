@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -48,7 +49,7 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         associatedId = getArguments().getString(ASSOCIATEDID);
-        itemsList = TodoListFragment.database.toDoListDao().getItemsForList(associatedId);
+        itemsList = TodoListFragment.database.toDoListDao().getItemsForList(associatedId, false);
         //List<String> titles = getArguments().getStringArrayList(ITEMNAMES);
        // Object[] status  = (Object[]) getArguments().getSerializable(STATUS);
        // Object[] creationDate  = (Object[]) getArguments().getSerializable(CREATIONDATE);
@@ -146,17 +147,37 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
         CheckBox checkBox = itemView.findViewById(R.id.item_checkbox);
         TextView title = itemView.findViewById(R.id.item_title);
         TextView date = itemView.findViewById(R.id.item_date);
+        TodoItem item;
 
 
         public ToDoItemHolder(@NonNull View itemView) {
             super(itemView);
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    Log.i(TAG, "Checked " + item.title);
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            //Log.i(TAG,  "completionStatus: " + item.isCompleted);
+                            item.isCompleted = !item.isCompleted;
+                            TodoListFragment.database.toDoListDao().updateItemStatus(item);
+                            Log.i(TAG,  "completionStatus: " + item.isCompleted);
+                        }
+                    });
+
+
+                }
+            });
 
         }
         private void update(TodoItem item) {
-            checkBox.setChecked(item.isCompleted);
+            //checkBox.setChecked(item.isCompleted);
             title.setText(item.title);
             date.setText(item.creationDate.toString());
         }
+
+
     }
 
     private class ToDoItemAdapter extends RecyclerView.Adapter<ToDoItemHolder> {
@@ -176,8 +197,8 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
         @Override
         public void onBindViewHolder(@NonNull ToDoItemHolder holder, int position) {
             TodoItem currentItem = items.get(position);
+            holder.item = currentItem;
             holder.update(currentItem);
-
         }
 
         @Override

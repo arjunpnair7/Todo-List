@@ -13,7 +13,7 @@ public class TodoItemsViewModel extends ViewModel {
 
 
     public static void retrieveItems(String id) {
-        myItems = TodoListFragment.database.toDoListDao().getItemsForList(id);
+        myItems = TodoListFragment.database.toDoListDao().getItemsForList(id, false);
         Log.i("test", "tester");
     }
 

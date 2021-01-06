@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.simpletodolist.ToDoList;
 import com.example.simpletodolist.TodoItem;
@@ -19,11 +20,14 @@ public interface ToDoListDao {
     @Query("SELECT * FROM todolist")
     public LiveData<List<ToDoList>> getToDoLists();
 
-    @Query("SELECT * FROM todoitem WHERE id = :listID")
-    public LiveData<List<TodoItem>> getItemsForList(String listID);
+    @Query("SELECT * FROM todoitem WHERE id = :listID AND isCompleted = :completed")
+    public LiveData<List<TodoItem>> getItemsForList(String listID, boolean completed);
 
     @Insert
     public void addItemToList(TodoItem item);
+
+    @Update
+    public void updateItemStatus(TodoItem item);
 
 
 
