@@ -39,11 +39,12 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
     public String inputtedTitle;
     public static TodolistsDatabase database;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private ToDoList list;
 
     @Override
     public void onDialogPositiveClick(String inputtedTitle) {
         this.inputtedTitle = inputtedTitle;
-        ToDoList list = new ToDoList(inputtedTitle);
+         list = new ToDoList(inputtedTitle);
 
         executor.execute(new Runnable() {
             @Override
@@ -68,7 +69,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        database = Room.databaseBuilder(getContext(), TodolistsDatabase.class, "todolistsdatabase").build();
+        database = Room.databaseBuilder(getContext(), TodolistsDatabase.class, "todolistsdatabase").fallbackToDestructiveMigration().build();
         Log.i(TAG, "TodoList Fragment created");
 
     }
@@ -148,8 +149,9 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
             //To be added
             //Will trigger a transition to itemList fragment
             //prepareData();
+
             inputtedTitle = listTitle.getText().toString();
-            callbacks.onListClicked(inputtedTitle);
+            callbacks.onListClicked(list.listID);
            // Log.i(TAG, "itemview clicked");
 
         }

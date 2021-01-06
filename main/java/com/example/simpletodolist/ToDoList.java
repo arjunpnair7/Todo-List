@@ -15,6 +15,7 @@ public class ToDoList {
 
 
     public String title;
+    public String listID;
 
     @PrimaryKey(autoGenerate = true)
     public int identifier;
@@ -29,6 +30,7 @@ public class ToDoList {
     public ToDoList(String title) {
         //title = newTitle;
         this.title = title;
+        this.listID = UUID.randomUUID().toString();
         //this.identifier = Integer.valueOf(UUID.randomUUID().toString());
     }
 }
