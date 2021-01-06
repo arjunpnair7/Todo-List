@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class TodoListItemsFragment extends Fragment {
+public class TodoListItemsFragment extends Fragment implements NewListAlertDialogFragment.NewListDialogListener {
     public static String ITEMNAMES = "itemnames";
     public static String STATUS = "status";
     public static String CREATIONDATE = "creationdate";
@@ -37,6 +38,7 @@ public class TodoListItemsFragment extends Fragment {
     private FloatingActionButton fab;
     public static String ASSOCIATEDID = "associatedid";
     private TodoItemsViewModel todoItemsViewModel;
+    public static String NEWITEMTAG = "newitem";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,6 +109,9 @@ public class TodoListItemsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "items fab clicked");
+                DialogFragment fragment = new NewListAlertDialogFragment();
+                fragment.setTargetFragment(TodoListItemsFragment.this, 0);
+                fragment.show(getFragmentManager(), NEWITEMTAG);
             }
         });
     }
@@ -117,6 +122,11 @@ public class TodoListItemsFragment extends Fragment {
         TodoListItemsFragment fragment = new TodoListItemsFragment();
         fragment.setArguments(b);
         return fragment;
+    }
+
+    @Override
+    public void onDialogPositiveClick(String inputtedTitle) {
+        Log.i(TAG, "todoitemfragment received click");
     }
 
     private class ToDoItemHolder extends RecyclerView.ViewHolder {

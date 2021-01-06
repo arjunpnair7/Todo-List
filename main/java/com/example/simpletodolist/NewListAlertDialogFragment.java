@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,7 @@ public class NewListAlertDialogFragment extends DialogFragment {
     EditText editTitle;
     String inputtedTitle = "test";
     TextWatcher titleWatcher;
+    //TextView title;
 
     public interface NewListDialogListener {
         public void onDialogPositiveClick(String inputtedTitle);
@@ -42,8 +44,15 @@ public class NewListAlertDialogFragment extends DialogFragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         View v = inflater.inflate(R.layout.fragment_new_list_dialog, null);
         builder.setView(v);
-
         editTitle = v.findViewById(R.id.editText);
+
+        //title = v.findViewById(R.id.listtitle_itemtitle);
+
+        if (getTag() == TodoListItemsFragment.NEWITEMTAG) {
+            editTitle.setHint("Enter item name");
+        }
+
+        //editTitle = v.findViewById(R.id.editText);
         titleWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
