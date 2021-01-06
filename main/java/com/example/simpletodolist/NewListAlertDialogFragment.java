@@ -18,6 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+//I decided to reuse this class for the alert dialogue that appears when the user is
+//is trying to create a new todo list item as the interface is essentially identical
+
 public class NewListAlertDialogFragment extends DialogFragment {
     private String TAG = "newlistalertdialogfragment";
     NewListDialogListener listener;

@@ -6,6 +6,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.example.simpletodolist.ToDoList;
+import com.example.simpletodolist.TodoItem;
 
 import java.util.List;
 
@@ -17,6 +18,12 @@ public interface ToDoListDao {
 
     @Query("SELECT * FROM todolist")
     public LiveData<List<ToDoList>> getToDoLists();
+
+    @Query("SELECT * FROM todoitem WHERE id = :listName")
+    public LiveData<List<TodoItem>> getItemsForList(String listName);
+
+    @Insert
+    public void addItemToList(TodoItem item);
 
 
 

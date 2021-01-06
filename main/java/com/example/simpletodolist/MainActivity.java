@@ -29,8 +29,9 @@ public class MainActivity extends AppCompatActivity implements TodoListFragment.
     }
 
     @Override
-    public void onListClicked(ArrayList<String> itemNames, List<Boolean> status, List<Date> creationDates) {
-        TodoListItemsFragment fragment = TodoListItemsFragment.newInstance(itemNames, status, creationDates);
+    public void onListClicked(String listId) {
+        //TodoListItemsFragment fragment = TodoListItemsFragment.newInstance(itemNames, status, creationDates);
+        TodoListItemsFragment fragment = TodoListItemsFragment.newInstance(listId);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out).replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
         Log.i(TAG, "transitioned to todolistitemsfragment");
 

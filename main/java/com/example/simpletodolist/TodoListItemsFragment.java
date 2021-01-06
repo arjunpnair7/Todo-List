@@ -11,8 +11,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.w3c.dom.Text;
 
@@ -26,56 +31,89 @@ public class TodoListItemsFragment extends Fragment {
     public static String CREATIONDATE = "creationdate";
     private String TAG = "todolistitemsfragment";
     private RecyclerView recyclerView;
+    private String associatedId;
     private ToDoItemAdapter adapter;
-    private List<TodoItem> itemsList = new ArrayList<>();
+    private LiveData<List<TodoItem>> itemsList;
+    private FloatingActionButton fab;
+    public static String ASSOCIATEDID = "associatedid";
+    private TodoItemsViewModel todoItemsViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        List<String> titles = getArguments().getStringArrayList(ITEMNAMES);
-        Object[] status  = (Object[]) getArguments().getSerializable(STATUS);
-        Object[] creationDate  = (Object[]) getArguments().getSerializable(CREATIONDATE);
-        Log.i(TAG, "Length " + status.length);
-        Log.i(TAG, "Length " + creationDate.length);
-        Log.i(TAG, "Length " + titles.size());
-        createItems(titles, status, creationDate);
+        associatedId = getArguments().getString(ASSOCIATEDID);
+        itemsList = TodoListFragment.database.toDoListDao().getItemsForList(associatedId);
+        //List<String> titles = getArguments().getStringArrayList(ITEMNAMES);
+       // Object[] status  = (Object[]) getArguments().getSerializable(STATUS);
+       // Object[] creationDate  = (Object[]) getArguments().getSerializable(CREATIONDATE);
+        //Log.i(TAG, "Length " + status.length);
+        //Log.i(TAG, "Length " + creationDate.length);
+        //Log.i(TAG, "Length " + titles.size());
+        //createItems(titles, status, creationDate);
 
 
         // Object <Date> creationDate = (List<Date>) getArguments().getSerializable(CREATIONDATE);
-        for (String item: titles) {
-            Log.i(TAG, item.toString());
-        }
+       // for (String item: titles) {
+        //    Log.i(TAG, item.toString());
+       // }
         Log.i(TAG, "created todolistitemsfragment");
     }
 
-    private void createItems(List<String> titles, Object[] status, Object[] creationDates) {
+  /*  private void createItems(List<String> titles, Object[] status, Object[] creationDates) {
         for (int i = 0; i < 100; i++) {
             itemsList.add(new TodoItem(titles.get(i), (Boolean)status[i], (Date)creationDates[i]));
 
         }
 
     }
+    *
+   */
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        TodoItemsViewModel.myItems.observe(getViewLifecycleOwner(), new Observer<List<TodoItem>>() {
+            @Override
+            public void onChanged(List<TodoItem> todoItems) {
+                Log.i(TAG, "new item livedata");
+                adapter = new ToDoItemAdapter(todoItems);
+                recyclerView.setAdapter(adapter);
+            }
+        });
 
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_todo_items, container, false);
         recyclerView = v.findViewById(R.id.todo_items_page);
+        fab = v.findViewById(R.id.items_fab);
+        ViewModelProvider provider = new ViewModelProvider(TodoListItemsFragment.this);
+         todoItemsViewModel = provider.get(TodoItemsViewModel.class);
+         TodoItemsViewModel.retrieveItems(associatedId);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ToDoItemAdapter(itemsList);
+       // adapter = new ToDoItemAdapter(itemsList);
         recyclerView.setAdapter(adapter);
 
 
         return v;
     }
 
-    public static TodoListItemsFragment newInstance(ArrayList<String> itemNames, List<Boolean> status, List<Date> creationDates) {
+    @Override
+    public void onStart() {
+        super.onStart();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "items fab clicked");
+            }
+        });
+    }
+
+    public static TodoListItemsFragment newInstance(String id) {
         Bundle b = new Bundle();
-        b.putStringArrayList(ITEMNAMES, itemNames);
-        b.putSerializable(STATUS, status.toArray());
-        b.putSerializable(CREATIONDATE, creationDates.toArray());
+        b.putString(ASSOCIATEDID, id);
         TodoListItemsFragment fragment = new TodoListItemsFragment();
         fragment.setArguments(b);
         return fragment;

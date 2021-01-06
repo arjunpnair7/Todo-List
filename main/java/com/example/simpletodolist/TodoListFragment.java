@@ -61,7 +61,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
     }
 
     public interface callbacks {
-         void onListClicked(ArrayList<String> itemNames, List<Boolean> status, List<Date> creationDates);
+         void onListClicked(String listId);
     }
 
 
@@ -147,8 +147,9 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
             //To be added
             //Will trigger a transition to itemList fragment
             //prepareData();
-            //callbacks.onListClicked(itemNames, status, creationDates);
+            callbacks.onListClicked(inputtedTitle);
            // Log.i(TAG, "itemview clicked");
+
         }
 
        /* private void prepareData() {
