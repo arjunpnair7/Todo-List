@@ -21,6 +21,9 @@ public interface ToDoListDao {
     @Query("SELECT * FROM todolist")
     public LiveData<List<ToDoList>> getToDoLists();
 
+    @Query("SELECT * FROM todoitem WHERE identifier = :id")
+    public TodoItem getToDoItemByID(int id);
+
     @Query("SELECT * FROM todolist WHERE listID = :listID")
     public ToDoList getToDoListByID(String listID);
 

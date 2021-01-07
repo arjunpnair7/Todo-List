@@ -46,6 +46,8 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     private TodoItemsViewModel todoItemsViewModel;
     public static String NEWITEMTAG = "newitem";
     private ExecutorService executor = Executors.newSingleThreadExecutor();
+    public static int currentItemIdentifier;
+
 
 
     @Override
@@ -167,6 +169,14 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
 
     @Override
     public void onFinishedEnteringNewName(String newName) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                TodoItem currentItem = TodoListFragment.database.toDoListDao().getToDoItemByID(currentItemIdentifier);
+                currentItem.title = newName;
+                TodoListFragment.database.toDoListDao().updateItemStatus(currentItem);
+            }
+        });
 
     }
 
@@ -190,36 +200,29 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
                             TodoListFragment.database.toDoListDao().updateItemStatus(item);
                         }
                     });
-
-
                 }
             });
 
-
-        /*    checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Log.i(TAG, "Checked " + item.title);
-                    executor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-
-
-
-                            Log.i(TAG,  "completionStatus: " + item.isCompleted);
-                        }
-                    });
-
-
-
+                public boolean onLongClick(View v) {
+                    TodoListItemsFragment.currentItemIdentifier = item.identifier;
+                    Log.i(TAG, "item clicked" + item.identifier);
+                   // TodoListFragment.currentListId = list.listID;
+                   // Log.i(TAG, "long click: " + list.listID);
+                    DialogFragment fragment = new NewListAlertDialogFragment();
+                    fragment.setTargetFragment(TodoListItemsFragment.this, 0);
+                    fragment.show(getFragmentManager(), "updateitemname");
+                    return true;
                 }
-            }); */
+            });
 
 
 
         }
         private void update(TodoItem item) {
             title.setText(item.title);
+            Log.i(TAG, "item's primary key: " + item.identifier);
             if ((item.isCompleted)) {
                 checkBox.setChecked(true);
             } else {

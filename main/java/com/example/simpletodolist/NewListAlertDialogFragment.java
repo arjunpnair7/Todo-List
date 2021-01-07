@@ -58,6 +58,9 @@ public class NewListAlertDialogFragment extends DialogFragment {
         if (getTag() == "updatelistname") {
             editTitle.setHint("New list name");
         }
+        if (getTag() == "updateitemname") {
+            editTitle.setHint("New item name");
+        }
 
         //editTitle = v.findViewById(R.id.editText);
         titleWatcher = new TextWatcher() {
@@ -87,9 +90,10 @@ public class NewListAlertDialogFragment extends DialogFragment {
                 if (getTag() == "updatelistname") {
                     listener.onFinishedEnteringNewName(editTitle.getText().toString());
                     Log.i(TAG, "onfinishedenteringnewname called");
+                } else if (getTag() == "updateitemname") {
+                    listener.onFinishedEnteringNewName(editTitle.getText().toString());
                 } else {
                     listener.onDialogPositiveClick(editTitle.getText().toString());
-
                 }
 
             }
