@@ -42,6 +42,12 @@ public interface ToDoListDao {
     @Query("DELETE FROM ToDoList WHERE listID = :listID")
     public void deleteListById(String listID);
 
+    @Query("DELETE FROM TodoItem WHERE id = :id")
+    public void deleteAssociatedItemsForList(String id);
+
+    @Query("DELETE FROM TodoItem WHERE identifier = :id")
+    public void deleteItemByID(int id);
+
 
 
 

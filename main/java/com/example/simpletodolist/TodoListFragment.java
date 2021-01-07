@@ -139,6 +139,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
                     @Override
                     public void run() {
                         database.toDoListDao().deleteListById(currentListId);
+                        database.toDoListDao().deleteAssociatedItemsForList(currentListId);
                     }
                 });
             }
