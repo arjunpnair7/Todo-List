@@ -39,6 +39,9 @@ public interface ToDoListDao {
     @Update
     public void updateList(ToDoList list);
 
+    @Query("DELETE FROM ToDoList WHERE listID = :listID")
+    public void deleteListById(String listID);
+
 
 
 

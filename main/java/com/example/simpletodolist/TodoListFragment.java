@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
@@ -16,6 +17,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -41,6 +43,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private ToDoList list;
     public static String currentListId;
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallBack;
 
     @Override
     public void onDialogPositiveClick(String inputtedTitle) {
@@ -120,8 +123,30 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
         ViewModelProvider provider = new ViewModelProvider(TodoListFragment.this);
         todoListsViewModel = provider.get(TodoListsViewModel.class);
         recyclerView = v.findViewById(R.id.todo_items);
+
         fab = v.findViewById(R.id.fab);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        itemTouchHelperCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                Log.i(TAG, "swiped: " + currentListId);
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        database.toDoListDao().deleteListById(currentListId);
+                    }
+                });
+            }
+        };
+
+
+
+        new ItemTouchHelper(itemTouchHelperCallBack).attachToRecyclerView(recyclerView);
         //adapter = new TodoListAdapter(todoListsViewModel.myList);
 
         Log.i(TAG, todoListsViewModel.myList.toString());
@@ -172,6 +197,16 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
                     return true;
                 }
             });
+            itemView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    Log.i(TAG, "touched " + list.listID);
+                    currentListId = list.listID;
+                    return false;
+                }
+            });
+
+
 
         }
         @Override
