@@ -165,6 +165,11 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
 
     }
 
+    @Override
+    public void onFinishedEnteringNewName(String newName) {
+
+    }
+
     private class ToDoItemHolder extends RecyclerView.ViewHolder {
         CheckBox checkBox = itemView.findViewById(R.id.item_checkbox);
         TextView title = itemView.findViewById(R.id.item_title);

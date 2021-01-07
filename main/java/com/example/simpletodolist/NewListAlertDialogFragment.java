@@ -32,7 +32,11 @@ public class NewListAlertDialogFragment extends DialogFragment {
 
     public interface NewListDialogListener {
         public void onDialogPositiveClick(String inputtedTitle);
+        public void onFinishedEnteringNewName(String newName);
+
     }
+
+
 
 
     @NonNull
@@ -50,6 +54,9 @@ public class NewListAlertDialogFragment extends DialogFragment {
 
         if (getTag() == TodoListItemsFragment.NEWITEMTAG) {
             editTitle.setHint("Enter item name");
+        }
+        if (getTag() == "updatelistname") {
+            editTitle.setHint("New list name");
         }
 
         //editTitle = v.findViewById(R.id.editText);
@@ -77,7 +84,13 @@ public class NewListAlertDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 Log.i(TAG, "User finished entering title: " + editTitle.getText());
                 inputtedTitle = editTitle.getText().toString();
-                listener.onDialogPositiveClick(editTitle.getText().toString());
+                if (getTag() == "updatelistname") {
+                    listener.onFinishedEnteringNewName(editTitle.getText().toString());
+                    Log.i(TAG, "onfinishedenteringnewname called");
+                } else {
+                    listener.onDialogPositiveClick(editTitle.getText().toString());
+
+                }
 
             }
         });

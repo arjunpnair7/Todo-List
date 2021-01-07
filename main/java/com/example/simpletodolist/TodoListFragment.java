@@ -40,12 +40,15 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
     public static TodolistsDatabase database;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private ToDoList list;
+    public static String currentListId;
 
     @Override
     public void onDialogPositiveClick(String inputtedTitle) {
+        //ToDoList current;
+
+
         this.inputtedTitle = inputtedTitle;
          list = new ToDoList(inputtedTitle);
-
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -59,6 +62,22 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
         //recyclerView.setAdapter(adapter);
 
         Log.i(TAG, "TodoList fragment received title: " + inputtedTitle);
+    }
+
+    @Override
+    public void onFinishedEnteringNewName(String newName) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ToDoList current = database.toDoListDao().getToDoListByID(currentListId);
+                current.title = newName;
+               database.toDoListDao().updateList(current);
+                if (current.title.equals(inputtedTitle)) {
+                    Log.i(TAG, "same list name");
+                }
+            }
+        });
+
     }
 
     public interface callbacks {
@@ -136,25 +155,37 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
         private TextView listTitle = itemView.findViewById(R.id.list_title);
         private ImageView listIcon = itemView.findViewById(R.id.list_icon);
         private ToDoList list;
-        private ArrayList<String> itemNames = new ArrayList<>();
-        private List<Boolean> status = new ArrayList<>();
-        private List<Date> creationDates = new ArrayList<>();
+
 
         public TodoListViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+
+                    TodoListFragment.currentListId = list.listID;
+                    Log.i(TAG, "long click: " + list.listID);
+                    DialogFragment fragment = new NewListAlertDialogFragment();
+                    fragment.setTargetFragment(TodoListFragment.this, 0);
+                    fragment.show(getFragmentManager(), "updatelistname");
+                    return true;
+                }
+            });
+
         }
         @Override
         public void onClick(View v) {
             //To be added
             //Will trigger a transition to itemList fragment
             //prepareData();
-
             inputtedTitle = listTitle.getText().toString();
             callbacks.onListClicked(list.listID);
            // Log.i(TAG, "itemview clicked");
 
         }
+
+
 
        /* private void prepareData() {
             List<TodoItem> items = list.todoItems;
@@ -165,9 +196,6 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
             }
 
         } */
-
-
-
         public void Bind(ToDoList list) {
             listTitle.setText(list.title);
         }
@@ -193,6 +221,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
             ToDoList list = adapterLists.get(position);
             holder.Bind(list);
             holder.list = list;
+           // TodoListFragment.currentListId = list.listID;
             //inputtedTitle = adapterLists.get(position);
 
         }
