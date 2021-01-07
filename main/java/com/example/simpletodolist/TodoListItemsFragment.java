@@ -1,5 +1,6 @@
 package com.example.simpletodolist;
 
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -153,7 +154,7 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     @Override
     public void onDialogPositiveClick(String inputtedTitle) {
         Log.i(TAG, "todoitemfragment received click");
-        TodoItem item = new TodoItem(inputtedTitle, true, new Date());
+        TodoItem item = new TodoItem(inputtedTitle, false, new Date());
         item.id = associatedId;
         executor.execute(new Runnable() {
             @Override
@@ -173,17 +174,15 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
 
         public ToDoItemHolder(@NonNull View itemView) {
             super(itemView);
-            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Log.i(TAG, "Checked " + item.title);
+                public void onClick(View v) {
+                    Log.i(TAG, "onClick");
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            //Log.i(TAG,  "completionStatus: " + item.isCompleted);
                             item.isCompleted = !item.isCompleted;
                             TodoListFragment.database.toDoListDao().updateItemStatus(item);
-                            Log.i(TAG,  "completionStatus: " + item.isCompleted);
                         }
                     });
 
@@ -191,12 +190,40 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
                 }
             });
 
+
+        /*    checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    Log.i(TAG, "Checked " + item.title);
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+
+
+
+                            Log.i(TAG,  "completionStatus: " + item.isCompleted);
+                        }
+                    });
+
+
+
+                }
+            }); */
+
+
+
         }
         private void update(TodoItem item) {
-            //checkBox.setChecked(item.isCompleted);
             title.setText(item.title);
-            date.setText(item.creationDate.toString());
+            if ((item.isCompleted)) {
+                checkBox.setChecked(true);
+            } else {
+                checkBox.setChecked(false);
+            }
+
         }
+
+
 
 
     }
@@ -212,6 +239,7 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
         @Override
         public ToDoItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = getLayoutInflater().inflate(R.layout.list_todo_item, parent, false);
+
             return new ToDoItemHolder(v);
         }
 
@@ -219,6 +247,7 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
         public void onBindViewHolder(@NonNull ToDoItemHolder holder, int position) {
             TodoItem currentItem = items.get(position);
             holder.item = currentItem;
+
             holder.update(currentItem);
         }
 
