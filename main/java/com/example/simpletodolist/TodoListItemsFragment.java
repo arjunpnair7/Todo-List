@@ -197,6 +197,7 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             currentItem.mapper = imageBitmap;
+            currentItem.firstAppearance++;
             //itemImage.setImageBitmap(imageBitmap);
             //itemImageBitmap = imageBitmap;
             //currentItem.mapper = itemImageBitmap;
@@ -376,13 +377,16 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
                 checkBox.setChecked(false);
             }
             itemImage.setImageBitmap(item.mapper);
-            if (itemImage != null) {
+            imageButton.setImageDrawable(itemImage.getDrawable());
+           // if (itemImage != null) {
                 //itemImage.setImageBitmap();
-                imageButton.setImageDrawable(itemImage.getDrawable());
+               // imageButton.setImageDrawable(itemImage.getDrawable());
                 //imageButton.setImageBitmap(currentItem.mapper);
-                Log.i(TAG, "item mapper is not null");
+               // Log.i(TAG, "item mapper is not null");
 
-            }
+           // } else {
+           //     imageButton.setImageResource(R.drawable.ic_list_camera);
+           // }
             Log.i(TAG, "updated");
 
 
@@ -404,8 +408,9 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
         @Override
         public ToDoItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = getLayoutInflater().inflate(R.layout.list_todo_item, parent, false);
+            ToDoItemHolder holder = new ToDoItemHolder(v);
 
-            return new ToDoItemHolder(v);
+            return holder;
         }
 
         @Override
@@ -415,6 +420,11 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
           // holder.imageButton.setImageBitmap(currentItem.mapper);
             Log.i(TAG, "binded");
             holder.update(currentItem);
+            if (currentItem.firstAppearance == 0) {
+                holder.imageButton.setImageResource(R.drawable.ic_list_camera);
+            }
+            //holder.imageButton.setImageResource(R.drawable.ic_list_camera);
+
         }
 
         @Override

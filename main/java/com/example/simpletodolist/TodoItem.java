@@ -33,11 +33,14 @@ public class TodoItem {
     public boolean isCompleted;
     public Date creationDate;
     public String id;
+    public int firstAppearance;
 
     public TodoItem(String title, boolean isCompleted, Date creationDate) {
         this.title = title;
         this.isCompleted = isCompleted;
         this.creationDate = creationDate;
+        this.firstAppearance = 0;
+        //this.mapper = BitmapFactory.decode
         //mapper = BitmapFactory.de
        // Bitmap b = BitmapFactory.decode
        // this.identifier = Integer.valueOf(UUID.randomUUID().toString());

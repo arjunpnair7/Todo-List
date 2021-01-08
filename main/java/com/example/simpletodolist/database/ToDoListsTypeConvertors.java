@@ -1,9 +1,13 @@
 package com.example.simpletodolist.database;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import androidx.room.TypeConverter;
+import androidx.room.processor.Context;
+
+import com.example.simpletodolist.R;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,9 +37,10 @@ public class ToDoListsTypeConvertors {
 
     @TypeConverter
     public byte[] fromBitmap(Bitmap bitmap) {
-        if (bitmap == null) {
+       if (bitmap == null) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            //bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+           // Bitmap map = BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.ic_list_camera);
+            //map.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             return outputStream.toByteArray();
         } else {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
