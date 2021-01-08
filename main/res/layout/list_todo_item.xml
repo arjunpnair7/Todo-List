@@ -3,43 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout2"
-    android:layout_marginBottom="40dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="40dp">
 
     <CheckBox
         android:id="@+id/item_checkbox"
-        android:layout_width="45dp"
-        android:layout_height="50dp"
+        android:layout_width="34dp"
+        android:layout_height="26dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:scaleX="2"
-        android:scaleY="2"
+        android:layout_marginTop="45dp"
+        android:layout_marginBottom="20dp"
+        android:scaleX="2.4"
+        android:scaleY="2.4"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></CheckBox>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"></CheckBox>
 
     <TextView
         android:id="@+id/item_title"
-        android:layout_width="199dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_width="184dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="33dp"
         android:text="Item Title"
         android:textSize="30sp"
         app:layout_constraintStart_toEndOf="@+id/item_checkbox"
         app:layout_constraintTop_toTopOf="parent"></TextView>
-
-    <TextView
-        android:id="@+id/item_date"
-        android:layout_width="83dp"
-        android:layout_height="11dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="4dp"
-        android:text="Date created"
-        android:textSize="18sp"
-        android:visibility="invisible"
-        app:layout_constraintStart_toEndOf="@+id/item_checkbox"
-        app:layout_constraintTop_toBottomOf="@+id/item_title">=
-    </TextView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements TodoListFragment.callbacks {
     private String TAG = "mainactivity";
@@ -17,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements TodoListFragment.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         //Get current fragment and make sure that it is not null

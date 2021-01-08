@@ -4,6 +4,7 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -17,6 +18,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -91,6 +94,27 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
                 TodoItemsViewModel.retrieveItems(associatedId, false);
                 adapter = new ToDoItemAdapter(todoItems);
                 recyclerView.setAdapter(adapter);
+                ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        Log.i(TAG, "Current item id: " + currentItemIdentifier);
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                TodoListFragment.database.toDoListDao().deleteItemByID(currentItemIdentifier);
+
+                            }
+                        });
+                    }
+                };
+                new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
+
+
                 //completedItemsAdapter = new ToDoItemAdapter(todoItems);
                 //completedRecyclerView.setAdapter(completedItemsAdapter);
             }
@@ -122,8 +146,19 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
          //if (TodoItemsViewModel.myCompletedItems == null) {
          //    Log.i(TAG, "myCompletedItems is null");
         // }
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        completedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(manager);
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                manager.getOrientation());
+        mDividerItemDecoration.setDrawable(getContext().getDrawable(R.drawable.item_divider));
+        recyclerView.addItemDecoration(mDividerItemDecoration);
+
+        LinearLayoutManager manager2 = new LinearLayoutManager(getContext());
+        completedRecyclerView.setLayoutManager(manager2);
+        DividerItemDecoration mDividerItemDecoration2 = new DividerItemDecoration(completedRecyclerView.getContext(),
+                manager2.getOrientation());
+        mDividerItemDecoration2.setDrawable(getContext().getDrawable(R.drawable.item_divider));
+        completedRecyclerView.addItemDecoration(mDividerItemDecoration2);
        // adapter = new ToDoItemAdapter(itemsList);
        // recyclerView.setAdapter(adapter);
 
@@ -183,7 +218,7 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     private class ToDoItemHolder extends RecyclerView.ViewHolder {
         CheckBox checkBox = itemView.findViewById(R.id.item_checkbox);
         TextView title = itemView.findViewById(R.id.item_title);
-        TextView date = itemView.findViewById(R.id.item_date);
+        //TextView date = itemView.findViewById(R.id.item_date);
         TodoItem item;
 
 
@@ -217,6 +252,14 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
                 }
             });
 
+            itemView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentItemIdentifier = item.identifier;
+                    return false;
+                }
+            });
+
 
 
         }
@@ -225,6 +268,7 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
             Log.i(TAG, "item's primary key: " + item.identifier);
             if ((item.isCompleted)) {
                 checkBox.setChecked(true);
+                title.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
                 checkBox.setChecked(false);
             }

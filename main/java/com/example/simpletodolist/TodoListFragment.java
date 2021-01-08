@@ -17,6 +17,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -125,7 +126,8 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
         recyclerView = v.findViewById(R.id.todo_items);
 
         fab = v.findViewById(R.id.fab);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(manager);
         itemTouchHelperCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -144,6 +146,12 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
                 });
             }
         };
+
+       DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                manager.getOrientation());
+       mDividerItemDecoration.setDrawable(getContext().getDrawable(R.drawable.item_divider));
+        recyclerView.addItemDecoration(mDividerItemDecoration);
+
 
 
 
@@ -169,6 +177,7 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
         todoListsViewModel.myList.observe(getViewLifecycleOwner(), new Observer<List<ToDoList>>() {
             @Override
             public void onChanged(List<ToDoList> toDoLists) {
+
                 Log.i(TAG, "data observed");
                 adapter = new TodoListAdapter(toDoLists);
                 recyclerView.setAdapter(adapter);
