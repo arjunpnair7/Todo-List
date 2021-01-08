@@ -196,16 +196,17 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            itemImage.setImageBitmap(imageBitmap);
+            currentItem.mapper = imageBitmap;
+            //itemImage.setImageBitmap(imageBitmap);
             //itemImageBitmap = imageBitmap;
             //currentItem.mapper = itemImageBitmap;
-           // executor.execute(new Runnable() {
-            //    @Override
-            //    public void run() {
-            //        TodoListFragment.database.toDoListDao().updateItemStatus(currentItem);
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    TodoListFragment.database.toDoListDao().updateItemStatus(currentItem);
                     //adapter.notifyDataSetChanged();
-            //    }
-           // });
+                }
+            });
             adapter.notifyDataSetChanged();
 
         }
@@ -374,7 +375,9 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
             } else {
                 checkBox.setChecked(false);
             }
+            itemImage.setImageBitmap(item.mapper);
             if (itemImage != null) {
+                //itemImage.setImageBitmap();
                 imageButton.setImageDrawable(itemImage.getDrawable());
                 //imageButton.setImageBitmap(currentItem.mapper);
                 Log.i(TAG, "item mapper is not null");

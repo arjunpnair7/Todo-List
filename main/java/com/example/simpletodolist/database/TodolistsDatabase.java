@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.simpletodolist.ToDoList;
 import com.example.simpletodolist.TodoItem;
 
-@Database(entities = {ToDoList.class, TodoItem.class}, version = 7)
+@Database(entities = {ToDoList.class, TodoItem.class}, version = 8)
 @TypeConverters({ToDoListsTypeConvertors.class})
 public abstract class TodolistsDatabase extends RoomDatabase {
 

@@ -33,9 +33,17 @@ public class ToDoListsTypeConvertors {
 
     @TypeConverter
     public byte[] fromBitmap(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        return outputStream.toByteArray();
+        if (bitmap == null) {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            //bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            return outputStream.toByteArray();
+        } else {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            return outputStream.toByteArray();
+        }
+
+
     }
     @TypeConverter
     public Bitmap toBitmap(byte[] byteArray) {

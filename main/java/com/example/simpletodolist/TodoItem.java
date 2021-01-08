@@ -26,7 +26,7 @@ public class TodoItem {
     @PrimaryKey(autoGenerate = true)
     public int identifier;
 
-    @Ignore
+    @Nullable
     public Bitmap mapper;
 
 
