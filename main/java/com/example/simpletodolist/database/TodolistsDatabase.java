@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.simpletodolist.ToDoList;
 import com.example.simpletodolist.TodoItem;
 
-@Database(entities = {ToDoList.class, TodoItem.class}, version = 3)
+@Database(entities = {ToDoList.class, TodoItem.class}, version = 7)
 @TypeConverters({ToDoListsTypeConvertors.class})
 public abstract class TodolistsDatabase extends RoomDatabase {
 
@@ -28,6 +28,15 @@ public abstract class TodolistsDatabase extends RoomDatabase {
     };
                // database.execSQL("ALTER TABLE Crime ADD COLUMN suspect TEXT NOT NULL DEFAULT ''");
 
+    public static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE TodoItem ADD COLUMN imageViewID INTEGER");
+            //"ALTER TABLE TodoItem ADD COLUMN identifier UUID"
+
+
+        }
+    };
 
 
 }

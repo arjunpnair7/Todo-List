@@ -23,13 +23,25 @@
 
     <TextView
         android:id="@+id/item_title"
-        android:layout_width="184dp"
-        android:layout_height="62dp"
+        android:layout_width="236dp"
+        android:layout_height="46dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="33dp"
         android:text="Item Title"
         android:textSize="30sp"
         app:layout_constraintStart_toEndOf="@+id/item_checkbox"
         app:layout_constraintTop_toTopOf="parent"></TextView>
+
+    <ImageButton
+        android:id="@+id/item_imagebutton"
+        android:layout_width="68dp"
+        android:layout_height="66dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.692"
+        app:layout_constraintStart_toEndOf="@+id/item_title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.68"
+        app:srcCompat="@drawable/ic_list_camera" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,17 @@
 package com.example.simpletodolist;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -9,10 +19,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
@@ -50,6 +63,11 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     public static String NEWITEMTAG = "newitem";
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     public static int currentItemIdentifier;
+    public static int REQUEST_IMAGE_CAPTURE = 1;
+    private static ImageView itemImage;
+    private static Bitmap itemImageBitmap;
+    private static TodoItem currentItem;
+
 
 
 
@@ -95,6 +113,8 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
                 adapter = new ToDoItemAdapter(todoItems);
                 recyclerView.setAdapter(adapter);
                 ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                    private Drawable icon;
+                    private ColorDrawable background;
                     @Override
                     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                         return false;
@@ -110,6 +130,43 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
 
                             }
                         });
+                    }
+
+                    @Override
+                    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                        super.onChildDraw(c, recyclerView, viewHolder, dX,
+                                dY, actionState, isCurrentlyActive);
+                        icon = ContextCompat.getDrawable(getContext(),
+                                R.drawable.ic_list_trash);
+                        background = new ColorDrawable(Color.RED);
+                        View itemView = viewHolder.itemView;
+                        int backgroundCornerOffset = 20;
+                        int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                        int iconTop = itemView.getTop() + (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                        int iconBottom = iconTop + icon.getIntrinsicHeight();
+
+                        if (dX > 0) { // Swiping to the right
+                            int iconLeft = itemView.getLeft() + iconMargin + icon.getIntrinsicWidth();
+                            int iconRight = itemView.getLeft() + iconMargin + 50;
+                            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+
+                            background.setBounds(itemView.getLeft(), itemView.getTop(),
+                                    itemView.getLeft() + ((int) dX) + backgroundCornerOffset,
+                                    itemView.getBottom());
+                        } else if (dX < 0) { // Swiping to the left
+                            int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
+                            int iconRight = itemView.getRight() - iconMargin;
+                            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+
+                            background.setBounds(itemView.getRight() + ((int) dX) - backgroundCornerOffset,
+                                    itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                        } else { // view is unSwiped
+                            background.setBounds(0, 0, 0, 0);
+                        }
+
+
+                        background.draw(c);
+                        icon.draw(c);
                     }
                 };
                 new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
@@ -132,20 +189,43 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
 
     }
 
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            itemImage.setImageBitmap(imageBitmap);
+            //itemImageBitmap = imageBitmap;
+            //currentItem.mapper = itemImageBitmap;
+           // executor.execute(new Runnable() {
+            //    @Override
+            //    public void run() {
+            //        TodoListFragment.database.toDoListDao().updateItemStatus(currentItem);
+                    //adapter.notifyDataSetChanged();
+            //    }
+           // });
+            adapter.notifyDataSetChanged();
+
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_todo_items, container, false);
         recyclerView = v.findViewById(R.id.todo_items_page);
         completedRecyclerView = v.findViewById(R.id.completedRecyclerview);
+        itemImage = new ImageView(getContext());
+        itemImage.setImageResource(R.drawable.ic_list_camera);
+        Log.i(TAG, "set imageResource to camera");
+
         fab = v.findViewById(R.id.items_fab);
         ViewModelProvider provider = new ViewModelProvider(TodoListItemsFragment.this);
          todoItemsViewModel = provider.get(TodoItemsViewModel.class);
          TodoItemsViewModel.retrieveItems(associatedId, true);
-         //TodoItemsViewModel.retrieveCompletedItems(associatedId);
-         //if (TodoItemsViewModel.myCompletedItems == null) {
-         //    Log.i(TAG, "myCompletedItems is null");
-        // }
+
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
@@ -159,9 +239,6 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
                 manager2.getOrientation());
         mDividerItemDecoration2.setDrawable(getContext().getDrawable(R.drawable.item_divider));
         completedRecyclerView.addItemDecoration(mDividerItemDecoration2);
-       // adapter = new ToDoItemAdapter(itemsList);
-       // recyclerView.setAdapter(adapter);
-
 
         return v;
     }
@@ -218,6 +295,10 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
     private class ToDoItemHolder extends RecyclerView.ViewHolder {
         CheckBox checkBox = itemView.findViewById(R.id.item_checkbox);
         TextView title = itemView.findViewById(R.id.item_title);
+       // TodoListItemsFragment.
+
+         ImageButton imageButton = itemView.findViewById(R.id.item_imagebutton);
+
         //TextView date = itemView.findViewById(R.id.item_date);
         TodoItem item;
 
@@ -260,9 +341,30 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
                 }
             });
 
-
+            imageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "Imagebutton clicked");
+                    currentItem = item;
+                    takePicture();
+                }
+            });
 
         }
+
+        private void takePicture() {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            try {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            } catch (ActivityNotFoundException e) {
+                // display error state to the user
+            }
+        }
+
+
+
+
+
         private void update(TodoItem item) {
             title.setText(item.title);
             Log.i(TAG, "item's primary key: " + item.identifier);
@@ -272,6 +374,14 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
             } else {
                 checkBox.setChecked(false);
             }
+            if (itemImage != null) {
+                imageButton.setImageDrawable(itemImage.getDrawable());
+                //imageButton.setImageBitmap(currentItem.mapper);
+                Log.i(TAG, "item mapper is not null");
+
+            }
+            Log.i(TAG, "updated");
+
 
         }
 
@@ -299,7 +409,8 @@ public class TodoListItemsFragment extends Fragment implements NewListAlertDialo
         public void onBindViewHolder(@NonNull ToDoItemHolder holder, int position) {
             TodoItem currentItem = items.get(position);
             holder.item = currentItem;
-
+          // holder.imageButton.setImageBitmap(currentItem.mapper);
+            Log.i(TAG, "binded");
             holder.update(currentItem);
         }
 
