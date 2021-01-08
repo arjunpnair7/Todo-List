@@ -1,6 +1,10 @@
 package com.example.simpletodolist;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -129,6 +134,8 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(manager);
         itemTouchHelperCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            private Drawable icon;
+            private ColorDrawable background;
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
@@ -145,7 +152,45 @@ public class TodoListFragment extends Fragment implements NewListAlertDialogFrag
                     }
                 });
             }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX,
+                        dY, actionState, isCurrentlyActive);
+                icon = ContextCompat.getDrawable(getContext(),
+                        R.drawable.ic_list_trash);
+                background = new ColorDrawable(Color.RED);
+                View itemView = viewHolder.itemView;
+                int backgroundCornerOffset = 20;
+                int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                int iconTop = itemView.getTop() + (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                int iconBottom = iconTop + icon.getIntrinsicHeight();
+
+                if (dX > 0) { // Swiping to the right
+                    int iconLeft = itemView.getLeft() + iconMargin + icon.getIntrinsicWidth();
+                    int iconRight = itemView.getLeft() + iconMargin + 50;
+                    icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+
+                    background.setBounds(itemView.getLeft(), itemView.getTop(),
+                            itemView.getLeft() + ((int) dX) + backgroundCornerOffset,
+                            itemView.getBottom());
+                } else if (dX < 0) { // Swiping to the left
+                    int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
+                    int iconRight = itemView.getRight() - iconMargin;
+                    icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+
+                    background.setBounds(itemView.getRight() + ((int) dX) - backgroundCornerOffset,
+                            itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                } else { // view is unSwiped
+                    background.setBounds(0, 0, 0, 0);
+                }
+
+
+                background.draw(c);
+                icon.draw(c);
+            }
         };
+
 
        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 manager.getOrientation());
