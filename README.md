@@ -1,4 +1,4 @@
-# SimpleTodoList
+#TodoList
 
 To-do list app – A basic to-do list app that allows the user to create new lists, add items to a list, delete lists and items, and associate pictures with a to-do list item
 
